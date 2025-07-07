@@ -64,20 +64,24 @@ def print_report(weight, weight_goal, net_intake, BMR, days_delta, average_defic
     print(f"💧 Estimated Fat Loss Today:     {fat_loss_grams:.0f} g")
 
     # Averages
-    print(f"\n📊 7-Day Average Deficit:        {average_week_deficit:,.0f} kcal") 
     print(f"📉 Average Daily Deficit:        {average_deficit:,.0f} kcal")      
-
-    # Goal Tracking
+    print(f"📊 7-Day Average Deficit:        {average_week_deficit:,.0f} kcal") 
     weight_left = weight - weight_goal
     total_calories_needed = weight_left * kg_in_kcal
     days_till_goal = total_calories_needed / abs(average_week_deficit)
-    estimated_reach_date = (date.today() + timedelta(days=int(days_till_goal))).strftime('%d-%m')
+    estimated_reach_date = (date.today() + timedelta(days=int(days_till_goal))).strftime('%d-%m-%Y')
     
-    print(f"\n🎯 Weight Left to Goal:          {weight_left:.1f} kg")
-    print(f"🔥 Total Calories Needed:        {total_calories_needed:,.0f} kcal")
-    print(f"📆 Estimated Days to Goal:       {days_till_goal:.0f} days")
-    print(f"📅 Estimated Date to Reach Goal: {estimated_reach_date}")
+    if average_week_deficit > 0:
+        print(f"\n⚠️ You are gaining weight.")
+    else:
+        # Goal Tracking
+        
+        print(f"🔥 Total Calories Needed:        {total_calories_needed:,.0f} kcal")
+        print(f"📆 Estimated Days to Goal:       {days_till_goal:.0f} days")
+        print(f"📅 Estimated Date to Reach Goal: {estimated_reach_date}")
     print(f"📅 Days Left Until Target Date:  {days_delta}")
+    print(f"\n🎯 Weight Goal:                  {weight_goal:.1f} kg")
+    print(f"\n🎯 Weight Left to Goal:          {weight_left:.1f} kg")
 
     # Status Check
     print("\n[Status]")

@@ -32,7 +32,7 @@ def get_data():
         return {}
 
 
-def input_data():
+def input_data(intake, burn, weight):
     date = Date.today().strftime("%Y-%m-%d")
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
@@ -41,23 +41,25 @@ def input_data():
     df = pd.read_csv(FILE_PATH, sep=',')
     df.columns = df.columns.str.strip()
     dates = df['DATE'].tolist()
-    if date in dates:
-        print("[INFO] Záznam pro dnešní den již existuje.")
-        return None
 
     try:
         new_entry = {
             'DATE': date,
-            'INTAKE': int(input("\nEnter intake: ")), 
-            'BURN': int(input("Enter burn: ")),  
-            'WEIGHT': float(input("Enter weight: "))
+            'INTAKE': intake, 
+            'BURN': burn,  
+            'WEIGHT': weight
         }
     except ValueError:
         print("[ERROR] Neplatná hodnota, záznam neuložen.")
         return None
 
+    if date in dates:
+        print("[INFO] Záznam pro dnešní den již existuje. Přepisuje se.")
+        df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT']] = new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT']
+    else:
+        df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
+
     print("[INFO] Nový záznam:", new_entry)
-    df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
     df.to_csv(FILE_PATH, index=False)
     print("[INFO] Data byla úspěšně uložena.")
     return new_entry
