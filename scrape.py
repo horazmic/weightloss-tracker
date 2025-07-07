@@ -49,8 +49,8 @@ def scrape_elements(driver, wait):
 
 def main():
     driver = create_driver()
-    username = "acanasgroup@gmail.com"  # Replace with your username
-    password = "lz#dx0GbcVxd0G79"  # Replace with your password
+    username = ""  # Replace with your username
+    password = ""  # Replace with your password
     wait = WebDriverWait(driver, 10)
     try:
         login(driver, wait, username, password)
