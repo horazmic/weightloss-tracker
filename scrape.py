@@ -8,7 +8,7 @@ import time
 # Setup Chrome using webdriver-manager
 def create_driver():
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Run in headless mode
+    options.add_argument("--headless")  # Run in headless mode
     options.add_argument("--window-size=1920,1080")  # Set window size to typical monitor resolution
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
@@ -36,12 +36,18 @@ def scrape_elements(driver, wait):
     wait = webdriver.support.ui.WebDriverWait(driver, 10)
     wait.until(lambda d: d.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span"))  # wait
 
-    intake = driver.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span")
+    try:
+        intake = driver.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span")
+    except:
+        raise Exception("Intake element not found. Please check the XPath or the page structure.")
     try:
         burn = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[1]/div[9]/span[2]")
     except:
-        burn = 0
-    weight = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]")
+        raise Exception("Burn element not found. Please check the XPath or the page structure.")
+    try:
+        weight = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]")
+    except:
+        raise Exception("Weight element not found. Please check the XPath or the page structure.")
     print(f"Intake: {intake.text}")
     print(f"Burn: {burn.text}")
     print(f"Weight: {weight.text}")
@@ -59,9 +65,9 @@ def main():
         intake = intake.replace(" kcal", "").replace("kcal", "").strip()
         burn = burn.replace(" kcal", "").replace("kcal", "").strip()
         weight = weight.replace(" kg", "").replace("kg", "").strip()
+        return intake, burn, weight
     finally:
         driver.quit()
-        return intake, burn, weight
 
 # Main script
 if __name__ == "__main__":

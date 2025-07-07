@@ -35,64 +35,66 @@ def dayly_report (data, BMR, weight_goal, target_date, initial_weight):
     today = date.today()
     days_delta = (target_date - today).days
     
-    print_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight)
+    return generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date)
     # get_ai_report(data, avarege_deficit , days_delta, weight_goal)
 
-
-def print_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight):
+def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date):
     kg_in_kcal = 7700
+    lines = []
 
-    print("=" * 55)
-    print("                    📊 WEIGHT LOSS REPORT")
-    print("=" * 55)
+    lines.append("=" * 40)
+    lines.append("                 📊 REPORT HUBNUTÍ")
+    lines.append("=" * 40)
 
-    # Basic Statistics
+    # Základní statistiky
     expected_loss = abs(calorie_deficit_sum) / kg_in_kcal
     expected_weight = initial_weight - expected_loss
     actual_weight_loss = initial_weight - weight
-    
-    print(f"🔥 Total Calories Burned:        {calorie_deficit_sum:,.0f} kcal")
-    print(f"📉 Expected Weight Loss:         {expected_loss:.1f} kg")
-    print(f"📉 Actual Weight Loss:           {actual_weight_loss:.1f} kg")
-    print(f"📉 Expected Weight:              {expected_weight:.1f} kg")
-    print(f"⚖️  Current Weight:               {weight:.1f} kg")
-    
-    # Daily Deficit
+
+    lines.append(f"🔥 Celkový kalorický deficit:    {calorie_deficit_sum:,.0f} kcal")
+    lines.append(f"📉 Očekávaný úbytek váhy:        {expected_loss:.1f} kg")
+    lines.append(f"📉 Skutečný úbytek váhy:         {actual_weight_loss:.1f} kg")
+    lines.append(f"📉 Očekávaná váha:               {expected_weight:.1f} kg")
+    lines.append(f"⚖️  Aktuální váha:                {weight:.1f} kg")
+
+    # Dnešní deficit
     daily_deficit = net_intake - BMR
     fat_loss_grams = ((BMR - net_intake) / kg_in_kcal) * 1000
-    print(f"\n🥗 Today's Deficit:              {daily_deficit:+} kcal")
-    print(f"💧 Estimated Fat Loss Today:     {fat_loss_grams:.0f} g")
+    lines.append(f"\n🥗 Dnešní kalorický rozdíl:      {daily_deficit:+} kcal")
+    lines.append(f"💧 Odhad úbytku tuku dnes:       {fat_loss_grams:.0f} g")
 
-    # Averages
-    print(f"📉 Average Daily Deficit:        {average_deficit:,.0f} kcal")      
-    print(f"📊 7-Day Average Deficit:        {average_week_deficit:,.0f} kcal") 
+    # Průměry
+    lines.append(f"📉 Průměrný denní deficit:       {average_deficit:,.0f} kcal")      
+    lines.append(f"📊 7denní průměr deficitu:       {average_week_deficit:,.0f} kcal") 
+
     weight_left = weight - weight_goal
     total_calories_needed = weight_left * kg_in_kcal
-    days_till_goal = total_calories_needed / abs(average_week_deficit)
-    estimated_reach_date = (date.today() + timedelta(days=int(days_till_goal))).strftime('%d-%m-%Y')
-    
-    if average_week_deficit > 0:
-        print(f"\n⚠️ You are gaining weight.")
-    else:
-        # Goal Tracking
-        
-        print(f"🔥 Total Calories Needed:        {total_calories_needed:,.0f} kcal")
-        print(f"📆 Estimated Days to Goal:       {days_till_goal:.0f} days")
-        print(f"📅 Estimated Date to Reach Goal: {estimated_reach_date}")
-    print(f"📅 Days Left Until Target Date:  {days_delta}")
-    print(f"\n🎯 Weight Goal:                  {weight_goal:.1f} kg")
-    print(f"\n🎯 Weight Left to Goal:          {weight_left:.1f} kg")
+    days_till_goal = total_calories_needed / abs(average_week_deficit) if average_week_deficit != 0 else float('inf')
+    estimated_reach_date = (date.today() + timedelta(days=int(days_till_goal))).strftime('%d.%m.%Y')
 
-    # Status Check
-    print("\n[Status]")
+    if average_week_deficit > 0:
+        lines.append(f"\n⚠️  Přibíráš na váze.")
+    else:
+        lines.append(f"🔥 Potřebný deficit celkem:      {total_calories_needed:,.0f} kcal")
+        lines.append(f"📆 Odhad dnů do cíle:            {days_till_goal:.0f} dní")
+        lines.append(f"📅 Odhad dosažení cíle:          {estimated_reach_date}")
+
+    lines.append(f"📅 Dní do cílového data:         {days_delta}")
+    lines.append(f"🎯 Cílová váha:                  {weight_goal:.1f} kg")
+    lines.append(f"\n🎯 Zbývá shodit:                 {weight_left:.1f} kg")
+
+    # Stav
+    lines.append("\n[Stav]")
     if days_till_goal < days_delta:
-        print("✅ You are on track! Keep going! 🚀")
+        lines.append("✅ Jsi na dobré cestě! Jen tak dál! 🚀")
     else:
         recommended_deficit = total_calories_needed / days_delta
-        print("⚠️  You are behind schedule. Consider adjusting your plan.")
-        print(f"💡 Recommended daily deficit:    {recommended_deficit:.0f} kcal")
+        lines.append("⚠️  Jsi pozadu. Zvaž úpravu plánu.")
+        lines.append(f"💡 Doporučený denní deficit:     {recommended_deficit:.0f} kcal")
 
-    # Final Prediction
+    # Finální predikce
     estimated_weight_at_target_date = weight - (days_delta * abs(average_week_deficit)) / kg_in_kcal  
-    print(f"🔮 Estimated Weight on 07-01:    {estimated_weight_at_target_date:.1f} kg")
-    print("=" * 55)
+    lines.append(f"🔮 Odhad váhy k {target_date}: {estimated_weight_at_target_date:.1f} kg")
+    lines.append("=" * 40)
+
+    return "\n".join(lines)

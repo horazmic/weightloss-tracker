@@ -44,11 +44,12 @@ def input_data(intake, burn, weight):
 
     try:
         new_entry = {
-            'DATE': date,
-            'INTAKE': intake, 
-            'BURN': burn,  
-            'WEIGHT': weight
-        }
+        'DATE': date, 
+        'INTAKE': int(intake),   # přetypování na int
+        'BURN': int(burn),       # přetypování na int
+        'WEIGHT': float(weight)  # přetypování na float
+}
+
     except ValueError:
         print("[ERROR] Neplatná hodnota, záznam neuložen.")
         return None
