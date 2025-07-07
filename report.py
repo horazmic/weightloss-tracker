@@ -42,9 +42,9 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
     kg_in_kcal = 7700
     lines = []
 
-    lines.append("=" * 40)
+    lines.append("=" * 30)
     lines.append("                 📊 REPORT HUBNUTÍ")
-    lines.append("=" * 40)
+    lines.append("=" * 30)
 
     # Základní statistiky
     expected_loss = abs(calorie_deficit_sum) / kg_in_kcal
@@ -95,6 +95,6 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
     # Finální predikce
     estimated_weight_at_target_date = weight - (days_delta * abs(average_week_deficit)) / kg_in_kcal  
     lines.append(f"🔮 Odhad váhy k {target_date}: {estimated_weight_at_target_date:.1f} kg")
-    lines.append("=" * 40)
+    lines.append("=" * 30)
 
     return "\n".join(lines)
