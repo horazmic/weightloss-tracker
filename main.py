@@ -15,7 +15,7 @@ def main(do_scrape: bool):
     else:
         # set initial parameters
         BMR = 2100
-        initial_weight = 99.6
+        initial_weight = 99.8
         weight_goal = 90
         target_date = date(2026, 4, 28)
 
