@@ -9,8 +9,11 @@ FILE_PATH = os.path.join(script_dir, 'data.csv')
 def get_data():
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
-        return {}
-    
+        print("[INFO] Vytvářím nový soubor.")
+        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT'])
+        df.to_csv(FILE_PATH, index=False)
+        print("[INFO] Nový soubor byl vytvořen.")
+
     try:
         df = pd.read_csv(FILE_PATH, sep=',')
         df.columns = df.columns.str.strip()
@@ -38,7 +41,10 @@ def input_data(intake, burn, weight):
     date = Date.today().strftime("%Y-%m-%d")
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
-        return None
+        print("[INFO] Vytvářím nový soubor.")
+        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT'])
+        df.to_csv(FILE_PATH, index=False)
+        print("[INFO] Nový soubor byl vytvořen.")
 
     df = pd.read_csv(FILE_PATH, sep=',')
     df.columns = df.columns.str.strip()
