@@ -36,7 +36,6 @@ def get_data():
         print(f"[ERROR] Chyba při načítání dat: {e}")
         return {}
 
-
 def input_data(intake, burn, weight):
     date = Date.today().strftime("%Y-%m-%d")
     if not os.path.exists(FILE_PATH):
@@ -52,21 +51,32 @@ def input_data(intake, burn, weight):
 
     try:
         new_entry = {
-        'DATE': date, 
-        'INTAKE': int(intake),   # přetypování na int
-        'BURN': int(burn),       # přetypování na int
-        'WEIGHT': float(weight)  # přetypování na float
-}
-
+            'DATE': date,
+            'INTAKE': int(intake),
+            'BURN': int(burn),
+            'WEIGHT': float(weight)
+        }
     except ValueError:
         print("[ERROR] Neplatná hodnota, záznam neuložen.")
         return None
 
     if date in dates:
         print("[INFO] Záznam pro dnešní den již existuje. Přepisuje se.")
-        df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT']] = new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT']
+        df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT']] = (
+            new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT']
+        )
     else:
-        df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
+        # Clean empty/all-NA columns from both dataframes before concat
+        def sanitize_df(d):
+            return d.dropna(axis=1, how='all')
+
+        df_clean = sanitize_df(df)
+        new_entry_df = sanitize_df(pd.DataFrame([new_entry], columns=df_clean.columns))
+
+        if df_clean.empty:
+            df = new_entry_df
+        else:
+            df = pd.concat([df_clean, new_entry_df], ignore_index=True)
 
     print("[INFO] Nový záznam:", new_entry)
     df.to_csv(FILE_PATH, index=False)
