@@ -40,23 +40,18 @@ def scrape_elements(driver, wait):
     wait.until(lambda d: d.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span"))  # wait
 
     try:
-        intake = driver.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span")
+        intake = driver.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span").text
     except:
         raise Exception("Intake element not found. Please check the XPath or the page structure.")
     try:
-        burn = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[1]/div[9]/span[2]")
-        burn = burn.text
-    except:
-        #raise Exception("Burn element not found. Please check the XPath or the page structure.")
-        burn = '0'
-    try:
-        weight = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]")
+        weight = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]").text
     except:
         raise Exception("Weight element not found. Please check the XPath or the page structure.")
-    print(f"Intake: {intake.text}")
-    print(f"Burn: {burn}")
-    print(f"Weight: {weight.text}")
-    return intake.text, burn, weight.text
+    try:
+        burn = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[1]/div[9]/span[2]").text
+    except:
+        burn = '0'
+    return intake, burn, weight
 
 def main():
     driver = create_driver()
