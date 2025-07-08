@@ -4,6 +4,9 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 import time
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # Setup Chrome using webdriver-manager
 def create_driver():
@@ -57,8 +60,11 @@ def scrape_elements(driver, wait):
 
 def main():
     driver = create_driver()
-    username = ""  # Replace with your username
-    password = ""  # Replace with your password
+    username = os.getenv("dine4fit_username")
+    password = os.getenv("dine4fit_password")
+    if not username or not password:
+        raise ValueError("Email credentials are not set in the environment variables.")
+
     wait = WebDriverWait(driver, 10)
     try:
         login(driver, wait, username, password)

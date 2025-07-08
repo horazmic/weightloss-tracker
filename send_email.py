@@ -3,11 +3,16 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 def send_email(subject, body):
-    sender_email = ""  # Replace with your email
-    receiver_email = ""  # Replace with the receiver's email
-    password = ""  # Replace with your email password
+    sender_email = os.getenv("email_username")
+    password = os.getenv("email_password")
+    receiver_email = os.getenv("email_recipient")
+    if not sender_email or not password or not receiver_email:
+        raise ValueError("Email credentials are not set in the environment variables.")
 
     message = MIMEMultipart()
     message["From"] = sender_email
