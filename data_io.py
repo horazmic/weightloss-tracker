@@ -2,7 +2,9 @@ import pandas as pd
 import os
 from datetime import date as Date
 
-FILE_PATH = './data.csv'
+# Get the directory where the script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+FILE_PATH = os.path.join(script_dir, 'data.csv')
 
 def get_data():
     if not os.path.exists(FILE_PATH):

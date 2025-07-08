@@ -36,7 +36,6 @@ def scrape_elements(driver, wait):
     url = "https://www.dine4fit.com/user/diary"
     driver.get(url)
 
-    wait = webdriver.support.ui.WebDriverWait(driver, 10)
     wait.until(lambda d: d.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span"))  # wait
 
     try:
