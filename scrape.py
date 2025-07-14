@@ -67,6 +67,7 @@ def main():
         intake = intake.replace(" kcal", "").replace("kcal", "").strip()
         burn = burn.replace(" kcal", "").replace("kcal", "").strip()
         weight = weight.replace(" kg", "").replace("kg", "").strip()
+        print(f"Intake: {intake} kcal, Burn: {burn} kcal, Weight: {weight} kg")
         return intake, burn, weight
     finally:
         driver.quit()
