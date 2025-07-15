@@ -10,14 +10,14 @@ def main(do_scrape: bool):
     if do_scrape:
         # scrape data from the website
         print("Scraping data from the website...")
-        intake, burn, weight  = scrape_main()
-        input_data(intake, burn, weight)
+        data = scrape_main()
+        input_data(data)
     else:
         # set initial parameters
         BMR = 2100
-        initial_weight = 99.8
-        weight_goal = 90
-        target_date = date(2026, 4, 28)
+        initial_weight = 99.3
+        weight_goal = 95
+        target_date = date(2025, 8, 14)
 
         # get data and generate report
         data = get_data()

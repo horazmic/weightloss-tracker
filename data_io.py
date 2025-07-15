@@ -10,7 +10,7 @@ def get_data():
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
         print("[INFO] Vytvářím nový soubor.")
-        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT'])
+        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN'])
         df.to_csv(FILE_PATH, index=False)
         print("[INFO] Nový soubor byl vytvořen.")
 
@@ -20,6 +20,7 @@ def get_data():
         df['INTAKE'] = df['INTAKE'].astype(int)
         df['BURN'] = df['BURN'].astype(int)
         df['WEIGHT'] = df['WEIGHT'].astype(float)
+        df['PROTEIN'] = df['PROTEIN'].astype(float)
 
         data = df.set_index('DATE').to_dict(orient='index')
         print("[INFO] Data byla úspěšně načtena.")
@@ -36,13 +37,19 @@ def get_data():
         print(f"[ERROR] Chyba při načítání dat: {e}")
         return {}
 
-def input_data(intake, burn, weight):
+def input_data(data):
     date = Date.today().strftime("%Y-%m-%d")
+
+    intake = data['intake'].replace(" kcal", "").replace("kcal", "").strip()
+    burn = data['burn'].replace(" kcal", "").replace("kcal", "").strip()
+    weight = data['weight'].replace(" kg", "").replace("kg", "").strip()
+    protein = data['protein'].replace(" g", "").replace("g", "").strip()
+    print(f"[INFO] Intake: {intake} kcal, Burn: {burn} kcal, Weight: {weight} kg, Protein: {protein} g")
 
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
         print("[INFO] Vytvářím nový soubor.")
-        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT'])
+        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN'])
         df.to_csv(FILE_PATH, index=False)
         print("[INFO] Nový soubor byl vytvořen.")
 
@@ -51,7 +58,8 @@ def input_data(intake, burn, weight):
             'DATE': date,
             'INTAKE': int(intake),
             'BURN': int(burn),
-            'WEIGHT': float(weight)
+            'WEIGHT': float(weight),
+            'PROTEIN': int(protein)
         }
     except ValueError:
         print("[ERROR] Neplatná hodnota, záznam neuložen.")
@@ -62,8 +70,8 @@ def input_data(intake, burn, weight):
 
     if date in df['DATE'].values:
         print("[INFO] Záznam pro dnešní den již existuje. Přepisuje se.")
-        df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT']] = (
-            new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT']
+        df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT', 'PROTEIN']] = (
+            new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT'], new_entry['PROTEIN']
         )
     else:
         print("[INFO] Přidává se nový záznam.")
@@ -71,5 +79,4 @@ def input_data(intake, burn, weight):
 
     df.to_csv(FILE_PATH, index=False)
     print("[INFO] Data byla úspěšně uložena.")
-    return new_entry
 

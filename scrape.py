@@ -35,22 +35,20 @@ def login(driver, wait, username, password):
 def scrape_elements(driver, wait):
     url = "https://www.dine4fit.com/user/diary"
     driver.get(url)
-
-    wait.until(lambda d: d.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span"))  # wait
-
+    xpaths = {
+        "intake": "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span",
+        "burn": "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[1]/div[9]/span[2]",
+        "weight": "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]",
+        "protein": "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[2]/div[1]/div[1]/div[3]/span[1]",
+    }
+    wait.until(lambda d: d.find_element(By.XPATH, xpaths["intake"]))
+    data = {}
     try:
-        intake = driver.find_element(By.XPATH, "/html/body/div/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[1]/div[1]/span").text
-    except:
-        raise Exception("Intake element not found. Please check the XPath or the page structure.")
-    try:
-        weight = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[3]/div/div[2]/div[4]/div[2]/div[2]/div/span[1]").text
-    except:
-        raise Exception("Weight element not found. Please check the XPath or the page structure.")
-    try:
-        burn = driver.find_element(By.XPATH, "/html/body/div[1]/md-content/md-content/div[1]/div[2]/md-content/div[6]/div[1]/div[9]/span[2]").text
-    except:
-        burn = '0'
-    return intake, burn, weight
+        for xpath in xpaths:
+            data[xpath] = driver.find_element(By.XPATH, xpaths[xpath]).text
+    except Exception as e:
+        raise Exception(f"Element not found: {e}")
+    return data
 
 def main():
     driver = create_driver()
@@ -63,12 +61,7 @@ def main():
     try:
         login(driver, wait, username, password)
         time.sleep(2)
-        intake, burn, weight = scrape_elements(driver, wait)
-        intake = intake.replace(" kcal", "").replace("kcal", "").strip()
-        burn = burn.replace(" kcal", "").replace("kcal", "").strip()
-        weight = weight.replace(" kg", "").replace("kg", "").strip()
-        print(f"Intake: {intake} kcal, Burn: {burn} kcal, Weight: {weight} kg")
-        return intake, burn, weight
+        return scrape_elements(driver, wait)
     finally:
         driver.quit()
 
