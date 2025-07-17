@@ -1,11 +1,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-from dotenv import load_dotenv
 import os
-load_dotenv()
 
 def send_email(subject, body):
     sender_email = os.getenv("email_username")

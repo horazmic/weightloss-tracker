@@ -4,9 +4,9 @@ from report import dayly_report
 from scrape import main as scrape_main
 from datetime import date
 from send_email import send_email
+import os
 
 def main(do_scrape: bool):
-
     if do_scrape:
         # scrape data from the website
         print("Scraping data from the website...")
@@ -23,8 +23,9 @@ def main(do_scrape: bool):
         data = get_data()
         report = dayly_report(data, BMR, weight_goal, target_date, initial_weight)
 
+        name = os.getenv("name")
         send_email(
-            subject=f"Denní přehled Michal {date.today()}",
+            subject=f"Denní přehled {name} {date.today()}",
             body=report)
 
 if __name__ == '__main__':

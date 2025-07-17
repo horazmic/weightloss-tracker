@@ -40,10 +40,14 @@ def get_data():
 def input_data(data):
     date = Date.today().strftime("%Y-%m-%d")
 
-    intake = data['intake'].replace(" kcal", "").replace("kcal", "").strip()
-    burn = data['burn'].replace(" kcal", "").replace("kcal", "").strip()
-    weight = data['weight'].replace(" kg", "").replace("kg", "").strip()
-    protein = data['protein'].replace(" g", "").replace("g", "").strip()
+    def clean_value(value, units):
+        for unit in units:
+            value = value.replace(unit, "")
+        return value.strip()
+    intake = clean_value(data.get('intake', ''), ["kcal", " kcal"])
+    burn = clean_value(data.get('burn', ''), ["kcal", " kcal"])
+    weight = clean_value(data.get('weight', ''), ["kg", " kg"])
+    protein = clean_value(data.get('protein', ''), ["g", " g"])
     print(f"[INFO] Intake: {intake} kcal, Burn: {burn} kcal, Weight: {weight} kg, Protein: {protein} g")
 
     if not os.path.exists(FILE_PATH):
@@ -62,21 +66,20 @@ def input_data(data):
             'PROTEIN': int(protein)
         }
     except ValueError:
-        print("[ERROR] Neplatná hodnota, záznam neuložen.")
+        print("[ERROR] Invalid value, record not saved.")
         return None
 
     df = pd.read_csv(FILE_PATH, sep=',')
     df.columns = df.columns.str.strip()
 
     if date in df['DATE'].values:
-        print("[INFO] Záznam pro dnešní den již existuje. Přepisuje se.")
+        print("[INFO] Record for today already exists. Overwriting.")
         df.loc[df['DATE'] == date, ['INTAKE', 'BURN', 'WEIGHT', 'PROTEIN']] = (
             new_entry['INTAKE'], new_entry['BURN'], new_entry['WEIGHT'], new_entry['PROTEIN']
         )
     else:
-        print("[INFO] Přidává se nový záznam.")
+        print("[INFO] Adding a new record.")
         df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
 
     df.to_csv(FILE_PATH, index=False)
-    print("[INFO] Data byla úspěšně uložena.")
-
+    print("[INFO] Data has been successfully saved.")
