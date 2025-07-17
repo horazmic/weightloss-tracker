@@ -14,18 +14,19 @@ def main(do_scrape: bool):
         input_data(data)
     else:
         # set initial parameters
-        BMR = 2100
-        initial_weight = 99.3
-        weight_goal = 95
-        target_date = date(2025, 8, 14)
-
+        parameters = {
+            "BMR": 2100,
+            "initial_weight": 99.3,
+            "weight_goal": 95,
+            "target_date": date(2025, 8, 14),
+            "name": os.getenv("name")
+        }
         # get data and generate report
         data = get_data()
-        report = dayly_report(data, BMR, weight_goal, target_date, initial_weight)
+        report = dayly_report(data, parameters) 
 
-        name = os.getenv("name")
         send_email(
-            subject=f"Denní přehled {name} {date.today()}",
+            subject=f"Denní přehled {parameters['name']} {date.today()}",
             body=report)
 
 if __name__ == '__main__':

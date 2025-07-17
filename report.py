@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from ai_report import get_ai_report
 
-def dayly_report (data, BMR, weight_goal, target_date, initial_weight):
+def dayly_report (data, parameters):
     # get today's data
     today_str = date.today().strftime("%Y-%m-%d")
     todays_data = data.get(today_str)
@@ -18,7 +18,7 @@ def dayly_report (data, BMR, weight_goal, target_date, initial_weight):
 
     # calculate total calorie deficit
     calorie_deficit_sum = sum(
-        (entry["INTAKE"] - entry["BURN"] - BMR) for entry in data.values()
+        (entry["INTAKE"] - entry["BURN"] - parameters["BMR"]) for entry in data.values()
     )
     average_deficit = calorie_deficit_sum // len(data)
 
@@ -26,24 +26,24 @@ def dayly_report (data, BMR, weight_goal, target_date, initial_weight):
     week_calorie_deficit_sum = sum(
         data.get((date.today() - timedelta(days=i)).strftime("%Y-%m-%d"), {"INTAKE": 0, "BURN": 0})["INTAKE"] 
         - data.get((date.today() - timedelta(days=i)).strftime("%Y-%m-%d"), {"INTAKE": 0, "BURN": 0})["BURN"] 
-        - BMR
+        - parameters["BMR"]
         for i in range(7)
     )
     average_week_deficit = week_calorie_deficit_sum // 7
 
     # days remaining until the target date
     today = date.today()
-    days_delta = (target_date - today).days
+    days_delta = (parameters["target_date"] - today).days
     
-    return generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date)
+    return generate_report(weight, parameters["weight_goal"], net_intake, parameters["BMR"], days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, parameters["initial_weight"], parameters["target_date"], parameters)
     # get_ai_report(data, avarege_deficit , days_delta, weight_goal)
 
-def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date):
+def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date, parameters):
     kg_in_kcal = 7700
     lines = []
 
     lines.append("=" * 30)
-    lines.append("                 📊 REPORT HUBNUTÍ")
+    lines.append(f"                 📊 REPORT HUBNUTÍ {parameters['name']}")
     lines.append("=" * 30)
 
     # Základní statistiky
