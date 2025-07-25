@@ -6,7 +6,7 @@ from datetime import date
 from send_email import send_email
 import os
 
-def main(do_scrape: bool):
+def main(do_scrape: bool, sendEmail: bool):
     if do_scrape:
         # scrape data from the website
         print("Scraping data from the website...")
@@ -25,11 +25,14 @@ def main(do_scrape: bool):
         # get data and generate report
         data = get_data()
         report = dayly_report(data, parameters) 
-
-        send_email(
-            subject=f"Denní přehled {parameters['name']} {date.today()}",
-            body=report)
+        print(report)
+        
+        if sendEmail:
+            send_email(
+                subject=f"Denní přehled {parameters['name']} {date.today()}",
+                body=report)
 
 if __name__ == '__main__':
     do_scrape = len(sys.argv) > 1 and sys.argv[1].lower() == 'scrape'
-    main(do_scrape)
+    sendEmail = len(sys.argv) > 1 and sys.argv[1].lower() == 'sendemail'
+    main(do_scrape, sendEmail)
