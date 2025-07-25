@@ -21,6 +21,7 @@ def main(do_scrape: bool):
             "target_date": date(2025, 8, 14),
             "name": os.getenv("name")
         }
+        
         # get data and generate report
         data = get_data()
         report = dayly_report(data, parameters) 

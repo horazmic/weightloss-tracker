@@ -10,13 +10,14 @@ def get_data():
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
         print("[INFO] Vytvářím nový soubor.")
-        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN'])
+        df = pd.DataFrame({col: pd.Series(dtype='object') for col in ['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN']})
         df.to_csv(FILE_PATH, index=False)
         print("[INFO] Nový soubor byl vytvořen.")
 
     try:
         df = pd.read_csv(FILE_PATH, sep=',')
         df.columns = df.columns.str.strip()
+        
         df['INTAKE'] = df['INTAKE'].astype(int)
         df['BURN'] = df['BURN'].astype(int)
         df['WEIGHT'] = df['WEIGHT'].astype(float)
@@ -53,7 +54,7 @@ def input_data(data):
     if not os.path.exists(FILE_PATH):
         print(f"[ERROR] Soubor {FILE_PATH} neexistuje.")
         print("[INFO] Vytvářím nový soubor.")
-        df = pd.DataFrame(columns=['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN'])
+        df = pd.DataFrame({col: pd.Series(dtype='object') for col in ['DATE', 'INTAKE', 'BURN', 'WEIGHT', 'PROTEIN']})
         df.to_csv(FILE_PATH, index=False)
         print("[INFO] Nový soubor byl vytvořen.")
 

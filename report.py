@@ -31,14 +31,21 @@ def dayly_report (data, parameters):
     )
     average_week_deficit = week_calorie_deficit_sum // 7
 
+    # calculate avarege protein intake
+    protein_intake_sum = sum(
+        data.get((date.today() - timedelta(days=i)).strftime("%Y-%m-%d"), {"INTAKE": 0, "BURN": 0})["PROTEIN"]
+        for i in range(len(data))
+    )
+    average_protein_intake = protein_intake_sum // len(data)
+
     # days remaining until the target date
-    today = date.today()
+    today = date.today() 
     days_delta = (parameters["target_date"] - today).days
     
-    return generate_report(weight, parameters["weight_goal"], net_intake, parameters["BMR"], days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, parameters["initial_weight"], parameters["target_date"], parameters)
+    return generate_report(weight, parameters["weight_goal"], net_intake, parameters["BMR"], days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, parameters["initial_weight"], parameters["target_date"], parameters, average_protein_intake)
     # get_ai_report(data, avarege_deficit , days_delta, weight_goal)
 
-def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date, parameters):
+def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_deficit, average_week_deficit, calorie_deficit_sum, initial_weight, target_date, parameters, average_protein_intake):
     kg_in_kcal = 7700
     lines = []
 
@@ -55,17 +62,18 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
     lines.append(f"📉 Očekávaný úbytek váhy:        {expected_loss:.1f} kg")
     lines.append(f"📉 Skutečný úbytek váhy:         {actual_weight_loss:.1f} kg")
     lines.append(f"📉 Očekávaná váha:               {expected_weight:.1f} kg")
-    lines.append(f"⚖️  Aktuální váha:                {weight:.1f} kg")
+    lines.append(f"⚖️  Aktuální váha:               {weight:.1f} kg")
 
     # Dnešní deficit
     daily_deficit = net_intake - BMR
     fat_loss_grams = ((BMR - net_intake) / kg_in_kcal) * 1000
-    lines.append(f"\n🥗 Dnešní kalorický rozdíl:      {daily_deficit:+} kcal")
+    lines.append(f"\n🥗 Dnešní kalorický rozdíl:    {daily_deficit:+} kcal")
     lines.append(f"💧 Odhad úbytku tuku dnes:       {fat_loss_grams:.0f} g")
 
     # Průměry
     lines.append(f"📉 Průměrný denní deficit:       {average_deficit:,.0f} kcal")      
     lines.append(f"📊 7denní průměr deficitu:       {average_week_deficit:,.0f} kcal") 
+    lines.append(f"🥩 Průměrný denní příjem bílkovin: {average_protein_intake} g")
 
     weight_left = weight - weight_goal
     total_calories_needed = weight_left * kg_in_kcal
@@ -79,9 +87,9 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
         lines.append(f"📆 Odhad dnů do cíle:            {days_till_goal:.0f} dní")
         lines.append(f"📅 Odhad dosažení cíle:          {estimated_reach_date}")
 
-    lines.append(f"📅 Dní do cílového data:         {days_delta}")
+    lines.append(f"📅 Dní do cílového data:         {days_delta} dní")
     lines.append(f"🎯 Cílová váha:                  {weight_goal:.1f} kg")
-    lines.append(f"\n🎯 Zbývá shodit:                 {weight_left:.1f} kg")
+    lines.append(f"\n🎯 Zbývá shodit:               {weight_left:.1f} kg")
 
     # Stav
     lines.append("\n[Stav]")
@@ -89,7 +97,7 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
         lines.append("✅ Jsi na dobré cestě! Jen tak dál! 🚀")
     else:
         recommended_deficit = total_calories_needed / days_delta
-        lines.append("⚠️  Jsi pozadu. Zvaž úpravu plánu.")
+        lines.append("⚠️ Jsi pozadu. Zvaž úpravu plánu.")
         lines.append(f"💡 Doporučený denní deficit:     {recommended_deficit:.0f} kcal")
 
     # Finální predikce
