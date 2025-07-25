@@ -51,6 +51,7 @@ def scrape_elements(driver, wait):
     return data
 
 def main():
+    print("[INFO] Creating driver...")
     driver = create_driver()
     username = os.getenv("dine4fit_username")
     password = os.getenv("dine4fit_password")
@@ -59,10 +60,12 @@ def main():
 
     wait = WebDriverWait(driver, 10)
     try:
+        print("[INFO] Logging in...")
         login(driver, wait, username, password)
         time.sleep(2)
         return scrape_elements(driver, wait)
     finally:
+        print("[INFO] Closing driver...")
         driver.quit()
 
 # Main script
