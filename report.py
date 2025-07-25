@@ -70,10 +70,16 @@ def generate_report(weight, weight_goal, net_intake, BMR, days_delta, average_de
     lines.append(f"\n🥗 Dnešní kalorický rozdíl:    {daily_deficit:+} kcal")
     lines.append(f"💧 Odhad úbytku tuku dnes:       {fat_loss_grams:.0f} g")
 
+    prtotein_per_kg = average_protein_intake / weight
     # Průměry
     lines.append(f"📉 Průměrný denní deficit:       {average_deficit:,.0f} kcal")      
     lines.append(f"📊 7denní průměr deficitu:       {average_week_deficit:,.0f} kcal") 
     lines.append(f"🥩 Průměrný denní příjem bílkovin: {average_protein_intake} g")
+    lines.append(f"🥩 Bílkoviny na kg váhy:         {prtotein_per_kg:.1f} g/kg")
+    if prtotein_per_kg < 1.6:
+        lines.append("⚠️ Nedostatečný příjem bílkovin. Zvaž zvýšení na 1.6-2.2 g/kg.")
+    elif prtotein_per_kg > 2.2:
+        lines.append("⚠️ Příliš vysoký příjem bílkovin. Zvaž snížení na 1.6-2.2 g/kg.")
 
     weight_left = weight - weight_goal
     total_calories_needed = weight_left * kg_in_kcal

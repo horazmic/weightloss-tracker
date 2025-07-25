@@ -63,7 +63,10 @@ def main():
         print("[INFO] Logging in...")
         login(driver, wait, username, password)
         time.sleep(2)
-        return scrape_elements(driver, wait)
+        print("[INFO] Scraping data...")
+        data = scrape_elements(driver, wait)
+        print("[INFO] Data scraped successfully.")
+        return data
     finally:
         print("[INFO] Closing driver...")
         driver.quit()
